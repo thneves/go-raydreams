@@ -90,6 +90,7 @@ In our case what the Ray Tracer does is:
 
 Also known as "the eye point"
 
+- The distance between the camera point and the viewport is referred as the *focal length*
 - Camera center = `(0,0,0)`
 - Camera looks down **negative Z axis**
 - X goes right, Y goes up(right-handed coordinates)

@@ -8,6 +8,30 @@ type Color struct {
 	R, G, B float64
 }
 
+func newColor(R, G, B float64) Color {
+	return Color{
+		R: R,
+		G: G,
+		B: B,
+	}
+}
+
+func AddColors(u, v Color) Color {
+	return newColor(
+		u.R+v.R,
+		u.G+v.G,
+		u.B+v.B,
+	)
+}
+
+func MulScalarColors(v Color, t float64) Color {
+	return newColor(
+		t*v.R,
+		t*v.G,
+		t*v.B,
+	)
+}
+
 func (color Color) WriteColor() {
 	// Translate the [0,1] component values to the byte range [0, 255]
 	rbyte := int(255.999 * color.R)

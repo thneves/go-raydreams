@@ -27,22 +27,12 @@ func (ray Ray) At(t float64) Point3 {
 	return Add(ray.origin, MulScalar(ray.direction, t))
 }
 
-var aspectRatio = 16.0 / 9.0
-var imageWidth = 400
+func (ray Ray) RayColor() Color {
+	unitDir := Unit(ray.direction)
+	a := 0.5 * (unitDir.Y + 1.0)
+	white := Color{R: 1, G: 1, B: 1}
+	sky := Color{R: 0.5, G: 0.7, B: 1.0}
+	result := AddColors(MulScalarColors(white, 1-a), MulScalarColors(sky, a))
 
-// Calculate the image height, and ensure that it's at least 1
-var imageHeight = int(imageWidth / int(aspectRatio))
-
-func imageHeightCheck(imageHeight int) int {
-	if imageHeight < 1 {
-		return 1
-	} else {
-		return imageHeight
-	}
-
+	return result
 }
-
-// Viewport widths less than one are ok since they are real valued.
-
-var viewportHeight = 2.0
-var viewportWidth = viewportHeight * float64((imageWidth / imageHeight))

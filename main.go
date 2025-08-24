@@ -27,5 +27,4 @@ func main() {
 			fmt.Printf("%d %d %d\n", ir, ig, ib)
 		}
 	}
-
 }

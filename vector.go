@@ -5,14 +5,8 @@ import "math"
 // Vec3 represents a 3-dimensional vector with X, Y, and Z components.
 // It can be used for positions, directions, colors, or any 3D mathematical operations.
 type Vec3 struct {
-	X float64 // X component of the vector
-	Y float64 // Y component of the vector
-	Z float64 // Z component of the vector
+	X, Y, Z float64
 }
-
-// Color is a type alias for Vec3, representing RGB color values.
-// Each component (X=R, Y=G, Z=B) should typically be in the range [0, 1].
-type Color = Vec3
 
 // Point3 is a type alias for Vec3, representing a 3D point in space.
 type Point3 = Vec3

@@ -36,5 +36,13 @@ Why we are using it?
 - It's basically a little piece of text that describes image.
 
 
+I just made my first image using Go:
+
+![IMG PPM](image.ppm)
+
+Apparently, this is the "Hello, World" of computer graphics! and it's actually really cooL!
+
+
+
 
 

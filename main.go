@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -51,7 +52,7 @@ func Mul(u, v Vector) Vector {
 	)
 }
 
-func MultiplyScalar(t float64, v Vector) Vector {
+func MulScalar(t float64, v Vector) Vector {
 	return newVector(
 		t*v.X,
 		t*v.Y,
@@ -69,6 +70,22 @@ func Cross(u, v Vector) Vector {
 		(u.Z*v.X)-(u.X*v.Z),
 		(u.X*v.Y)-(u.Y*v.X),
 	)
+}
+
+func Len(v Vector) float64 {
+	return math.Sqrt(Len2(v))
+}
+
+func Len2(v Vector) float64 {
+	return v.X*v.X + v.Y*v.Y + v.Z*v.Z
+}
+
+func Unit(v Vector) Vector {
+	return Vector{
+		v.X / Len(v),
+		v.Y / Len(v),
+		v.Z / Len(v),
+	}
 }
 
 func main() {

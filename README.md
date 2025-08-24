@@ -20,3 +20,19 @@ The Original book uses C++ as the language of choice to make this Ray Tracer. I 
 making it in Go, as it's my primary working language at the moment, and I've been also really enjoying to work with.
 The name of the book says "In One Weekend". Let's see how long it takes me to do it.
 
+### What is Going on?
+
+##### What is PPM Image Format ??
+
+The very first chapter talks about the PPM Image Format, because we need a way to see an image. However, I never heard of this format before. It stands for "Portable Pixel Map", it's simple, uncompressed raster image format designed for easy portability and manipulation across plataforms. It's part of the [Netbpm](https://en.wikipedia.org/wiki/Netpbm) Toolkit.
+
+Why we are using it?
+
+- For it's simplicity! no need for graphics library or special code to write it.
+- We focus on the Ray Tracer instead of image formats
+- Can be converted to PNG or whatever later.
+- It's basically a little piece of text that describes image.
+
+
+
+

@@ -19,7 +19,6 @@ func main() {
 			r := float64(j) / float64(image_width-1)
 			g := float64(i) / float64(image_height-1)
 			b := 0.0
-
 			ir := int(255.999 * r)
 			ig := int(255.999 * g)
 			ib := int(255.999 * b)

@@ -38,9 +38,10 @@ Why we are using it?
 
 I just made my first image using Go:
 
-![IMG PPM](image.ppm)
+![IMG PPM](cimage.png)
 
 Apparently, this is the "Hello, World" of computer graphics! and it's actually really cooL!
+The image you seeing is a .png converted from the .ppm because Markdown can't display a ppm file, but still!
 
 
 

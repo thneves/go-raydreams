@@ -63,4 +63,54 @@ The Ray Formula:
 
 A visual way of thinking about: Imagine that you are standing at point **A**. Then you point a *flashlight* in direction **b**. So **t** is just a *slider* for how far the light is moving, for example `t = 0`, you are still at the origin `A`, `t = 1`, you've moved 1 unit in direction `b` and so on... it can also be negative `t = -1` meaning you are behind *origin*.
 
+###### What a Ray Tracer does
+In our case what the Ray Tracer does is:
+
+1. Shoot a ray through each pixel
+2. See what it **hits** in the scene.
+3. Decide the pixel color based on that hit.
+
+###### Setting up the image
+
+- images have **aspect ratios** (width / height)
+- example: 16:9 ratio, wider than tall. A image with 800px width and 400px height has a **2:1 aspect ration**
+- We pick an image width of 400px. Then compute `height = width / aspect ratio`
+- This keeps the pixel "square"
+
+###### Viewport - The virtual screen in 3D space
+
+- imagine a rectangle floating in front of the camera: that's the **viewport**
+- each pixel corresponds to a point on this viewport
+- We choose:
+    - **viewport height = 2.0** - arbitrary start
+    - **viewport width = scaled to match aspect ratio**
+    - **focal length = 1.0** -> distance from camera viewport
+
+###### Camera
+
+Also known as "the eye point"
+
+- Camera center = `(0,0,0)`
+- Camera looks down **negative Z axis**
+- X goes right, Y goes up(right-handed coordinates)
+
+
+###### Pixel Grid
+
+- Viewport edges are spanned by two vectors:
+    - **viewport_u** -> horizontal direction
+    - **viewport_v** -> vertical direction (points down since image Y increases downward)
+- Pixel spacing -> `viewport_u / image_width, viewport_v / image_height`
+- The very first pixel first(top left-corner, pixel00) is computed from the top-left of the viewport plus half a pixel offset.
+
+###### Rendering Loop
+
+For each pixel:
+1. Compuite the center of that pixel on the viewport.
+2. Build a **ray** from the camera center throught that pixel.
+3. Ask `rayColor(rau)` what color to paint.
+4. Write the color to the PPM file.
+
+
+
 

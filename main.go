@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/thneves/go-raydreams/scene"
 )
 
 func main() {
@@ -28,7 +30,7 @@ func main() {
 			r := float64(j) / float64(imageWidth-1)
 			g := float64(i) / float64(imageHeight-1)
 			b := 0.0
-			pixelColor := Color{r, g, b}
+			pixelColor := scene.Color{r, g, b}
 			pixelColor.WriteColor()
 		}
 	}

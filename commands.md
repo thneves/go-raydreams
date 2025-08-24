@@ -1,0 +1,2 @@
+- `go run . > image.ppm` this redirects the stdout to a file, that's how i created the image
+- `convert image.ppm image.png` needs imagemagick installed `sudo apt install imagemagick`

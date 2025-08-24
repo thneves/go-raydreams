@@ -4,12 +4,14 @@ import "fmt"
 
 func main() {
 
-	// Image
+	// IMAGE
 
 	image_width := 256
 	image_height := 256
 
 	fmt.Printf("P3\n%d %d\n255\n", image_width, image_height)
+
+	// RENDER
 
 	// Required Header For a PPM file
 	// The P3 means colors are in ASCII, then 255 columns and 255 rows

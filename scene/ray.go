@@ -1,5 +1,7 @@
 package scene
 
+import "math"
+
 // What is a Ray
 type Ray struct {
 	origin    Point3
@@ -27,20 +29,30 @@ func (ray Ray) At(t float64) Point3 {
 	return Add(ray.origin, MulScalar(ray.direction, t))
 }
 
-func (ray Ray) hitSphere(center Point3, radius float64) bool {
+func (ray Ray) hitSphere(center Point3, radius float64) float64 {
 	oc := Sub(center, ray.origin)
-	a := Dot(ray.direction, ray.direction)
-	b := -2.0 * Dot(ray.direction, oc)
-	c := Dot(oc, oc) - radius*radius
-	discriminant := b*b - 4*a*c
-	return discriminant >= 0
+
+	a := LenSquared(ray.direction)
+	h := Dot(ray.direction, oc)
+	c := LenSquared(oc) - radius*radius
+	discrimant := h*h - a*c
+
+	if discrimant < 0 {
+		return -1.0
+	} else {
+		return (h - math.Sqrt(discrimant)/a)
+	}
+
 }
 
 func (ray Ray) RayColor() Color {
 	point3 := Point3{X: 0, Y: 0, Z: -1}
 
-	if ray.hitSphere(point3, 0.5) {
-		return Color{R: 1, G: 0, B: 0}
+	t := ray.hitSphere(point3, 0.5)
+
+	if t > 0.0 {
+		n := Unit(Sub(ray.At(t), point3))
+		return MulScalarColors(Color{n.X + 1, n.Y + 1, n.Z + 1}, 0.5)
 	}
 
 	unitDir := Unit(ray.direction)

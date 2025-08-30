@@ -8,6 +8,12 @@ type Ray struct {
 	direction Vec3
 }
 
+type HitRecord struct {
+	origin Point3
+	vector Vec3
+	t      float64
+}
+
 func NewRay(origin, direction Vec3) Ray {
 	return Ray{
 		origin:    origin,
@@ -29,7 +35,7 @@ func (ray Ray) At(t float64) Point3 {
 	return Add(ray.origin, MulScalar(ray.direction, t))
 }
 
-func (ray Ray) hitSphere(center Point3, radius float64) float64 {
+func (ray Ray) hitSphere(center Point3, record HitRecord, rayTmin, rayTmax, radius float64) bool {
 	oc := Sub(center, ray.origin)
 
 	a := LenSquared(ray.direction)
@@ -38,11 +44,25 @@ func (ray Ray) hitSphere(center Point3, radius float64) float64 {
 	discrimant := h*h - a*c
 
 	if discrimant < 0 {
-		return -1.0
-	} else {
-		return (h - math.Sqrt(discrimant)/a)
+		return false
 	}
 
+	sqrtd := math.Sqrt(discrimant)
+
+	// Find the neares root that lies in the acceptable range.
+
+	root := (h - sqrtd) / a
+
+	if root <= rayTmin || rayTmax <= root {
+		root := (h + sqrtd) / a
+		if root <= rayTmin || rayTmax <= root {
+			return false
+		}
+	}
+
+	record.t = root
+	record.origin = ray.At(record.t)
+	record.vector = Sub(record.origin, center) / radius
 }
 
 func (ray Ray) RayColor() Color {

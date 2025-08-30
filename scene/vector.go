@@ -41,6 +41,14 @@ func Add(u, v Vec3) Vec3 {
 	)
 }
 
+func AddPointer(u, v Point3) Point3 {
+	return Point3{
+		u.X + v.X,
+		u.Y + v.Y,
+		u.Z + v.Z,
+	}
+}
+
 // Sub returns the component-wise subtraction of vector v from vector u.
 func Sub(u, v Vec3) Vec3 {
 	return newVec3(
@@ -48,6 +56,14 @@ func Sub(u, v Vec3) Vec3 {
 		u.Y-v.Y,
 		u.Z-v.Z,
 	)
+}
+
+func SubPointer(u, v Point3) Point3 {
+	return Point3{
+		u.X - v.X,
+		u.Y - v.Y,
+		u.Z - v.Z,
+	}
 }
 
 // Mul returns the component-wise multiplication of two vectors u and v.
@@ -74,6 +90,10 @@ func MulScalar(v Vec3, t float64) Vec3 {
 // Note: No division by zero check is performed.
 func DivScalar(v Vec3, t float64) Vec3 {
 	return newVec3(v.X/t, v.Y/t, v.Z/t)
+}
+
+func DivScalarPointer(p Point3, t float64) Point3 {
+	return Point3{p.X / t, p.Y / t, p.Z / t}
 }
 
 // Vector Operations

@@ -35,7 +35,7 @@ func (ray Ray) At(t float64) Point3 {
 	return Add(ray.origin, MulScalar(ray.direction, t))
 }
 
-func (ray Ray) hitSphere(center Point3, record HitRecord, rayTmin, rayTmax, radius float64) bool {
+func (ray Ray) Hit(center Point3, record HitRecord, rayTmin, rayTmax, radius float64) (t float64, ok bool) {
 	oc := Sub(center, ray.origin)
 
 	a := LenSquared(ray.direction)
@@ -44,7 +44,7 @@ func (ray Ray) hitSphere(center Point3, record HitRecord, rayTmin, rayTmax, radi
 	discrimant := h*h - a*c
 
 	if discrimant < 0 {
-		return false
+		return -1.0, false
 	}
 
 	sqrtd := math.Sqrt(discrimant)
@@ -56,22 +56,24 @@ func (ray Ray) hitSphere(center Point3, record HitRecord, rayTmin, rayTmax, radi
 	if root <= rayTmin || rayTmax <= root {
 		root := (h + sqrtd) / a
 		if root <= rayTmin || rayTmax <= root {
-			return false
+			return -1.0, false
 		}
 	}
 
 	record.t = root
 	record.origin = ray.At(record.t)
-	record.vector = Sub(record.origin, center) / radius
+	record.vector = DivScalarPointer(SubPointer(record.origin, center), radius)
+
+	return 1.0, true
 }
 
 func (ray Ray) RayColor() Color {
-	point3 := Point3{X: 0, Y: 0, Z: -1}
+	center := Point3{X: 0, Y: 0, Z: -1}
 
-	t := ray.hitSphere(point3, 0.5)
+	t := ray.Hit(center, 0.5)
 
 	if t > 0.0 {
-		n := Unit(Sub(ray.At(t), point3))
+		n := Unit(Sub(ray.At(t), center))
 		return MulScalarColors(Color{n.X + 1, n.Y + 1, n.Z + 1}, 0.5)
 	}
 
@@ -83,3 +85,5 @@ func (ray Ray) RayColor() Color {
 
 	return result
 }
+
+func (ray Ray) setFaceNormal(outwardNormal Vec3) {}

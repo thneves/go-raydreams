@@ -1,66 +1,62 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"math/rand"
 
 	"github.com/thneves/go-raydreams/scene"
 )
 
 func main() {
+	world := &scene.HittableList{}
 
-	// IMAGE
+	groundMat := scene.Lambertian{Albedo: scene.Color{R: 0.5, G: 0.5, B: 0.5}}
+	world.Add(scene.NewSphere(scene.Point3{X: 0, Y: -1000, Z: 0}, 1000, groundMat))
 
-	aspectRatio := 16.0 / 9.0
-	imageWidth := 400
-	imageHeight := int(float64(imageWidth) / aspectRatio)
-
-	if imageHeight < 1 {
-		imageHeight = 1
-	}
-
-	fmt.Printf("P3\n%d %d\n255\n", imageWidth, imageHeight)
-
-	// CAMERA & VIEWPORT
-
-	focalLength := 1.0
-	viewportHeight := 2.0
-	viewportWidth := viewportHeight * (float64(imageWidth) / float64(imageHeight))
-	cameraCenter := scene.Point3{X: 0, Y: 0, Z: 0}
-
-	// Calculate the vectors across the horizontal and down the vertical viewport edges.
-
-	viewportU := scene.Vec3{X: viewportWidth, Y: 0, Z: 0}
-	viewportV := scene.Vec3{X: 0, Y: -viewportHeight, Z: 0}
-
-	// Calculate the horizontal and vertical delta vectors from pixel to pixel.
-
-	pixelDeltaU := scene.DivScalar(viewportU, float64(imageWidth))
-	pixelDeltaV := scene.DivScalar(viewportV, float64(imageHeight))
-
-	// Calculate the location of the upper left pixel
-
-	viewPortCenter := scene.Sub(cameraCenter, scene.Vec3{X: 0, Y: 0, Z: focalLength})
-	viewPortUpperLeft := scene.Sub(scene.Sub(viewPortCenter, scene.MulScalar(viewportU, 0.5)), scene.MulScalar(viewportV, 0.5))
-	pixel00Loc := scene.Add(viewPortUpperLeft, scene.MulScalar(scene.Add(pixelDeltaU, pixelDeltaV), 0.5))
-
-	// RENDER
-
-	for i := 0; i < imageHeight; i++ {
-
-		remaining := imageHeight - i
-		fmt.Fprintf(os.Stderr, "\rScanlines remaining: %d", remaining)
-
-		for j := 0; j < imageWidth; j++ {
-
-			pixelCenter := scene.Add(pixel00Loc, scene.Add(scene.MulScalar(pixelDeltaU, float64(j)), scene.MulScalar(pixelDeltaV, float64(i))))
-			rayDirection := scene.Sub(pixelCenter, cameraCenter)
-
-			ray := scene.NewRay(cameraCenter, rayDirection)
-
-			pixelColor := ray.RayColor()
-			pixelColor.WriteColor()
+	for a := -11; a < 11; a++ {
+		for b := -11; b < 11; b++ {
+			chooseMat := rand.Float64()
+			center := scene.Point3{
+				X: float64(a) + 0.9*rand.Float64(),
+				Y: 0.2,
+				Z: float64(b) + 0.9*rand.Float64(),
+			}
+			if scene.Len(scene.Sub(center, scene.Point3{X: 4, Y: 0.2, Z: 0})) <= 0.9 {
+				continue
+			}
+			var mat scene.Material
+			switch {
+			case chooseMat < 0.8:
+				albedo := scene.MulColors(scene.RandomColor(), scene.RandomColor())
+				mat = scene.Lambertian{Albedo: albedo}
+			case chooseMat < 0.95:
+				albedo := scene.RandomColorRange(0.5, 1)
+				fuzz := 0.5 * rand.Float64()
+				mat = scene.Metal{Albedo: albedo, Fuzz: fuzz}
+			default:
+				mat = scene.Dielectric{RefractionIndex: 1.5}
+			}
+			world.Add(scene.NewSphere(center, 0.2, mat))
 		}
 	}
-	fmt.Fprintln(os.Stderr)
+
+	world.Add(scene.NewSphere(scene.Point3{X: 0, Y: 1, Z: 0}, 1.0,
+		scene.Dielectric{RefractionIndex: 1.5}))
+	world.Add(scene.NewSphere(scene.Point3{X: -4, Y: 1, Z: 0}, 1.0,
+		scene.Lambertian{Albedo: scene.Color{R: 0.4, G: 0.2, B: 0.1}}))
+	world.Add(scene.NewSphere(scene.Point3{X: 4, Y: 1, Z: 0}, 1.0,
+		scene.Metal{Albedo: scene.Color{R: 0.7, G: 0.6, B: 0.5}, Fuzz: 0.0}))
+
+	cam := &scene.Camera{
+		AspectRatio:     16.0 / 9.0,
+		ImageWidth:      400,
+		SamplesPerPixel: 50,
+		MaxDepth:        20,
+		VFov:            20,
+		LookFrom:        scene.Point3{X: 13, Y: 2, Z: 3},
+		LookAt:          scene.Point3{X: 0, Y: 0, Z: 0},
+		VUp:             scene.Vec3{X: 0, Y: 1, Z: 0},
+		DefocusAngle:    0.6,
+		FocusDist:       10.0,
+	}
+	cam.Render(world)
 }

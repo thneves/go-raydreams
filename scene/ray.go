@@ -1,49 +1,20 @@
 package scene
 
-// What is a Ray
+// Ray is a half-line P(t) = origin + t * direction.
 type Ray struct {
 	origin    Point3
 	direction Vec3
 }
 
 func NewRay(origin, direction Vec3) Ray {
-	return Ray{
-		origin:    origin,
-		direction: direction,
-	}
+	return Ray{origin: origin, direction: direction}
 }
 
-// MATH
-// P(t) = A + t * b
-// P(t) -> The
-func (ray Ray) At(t float64) Point3 {
-	// Could be
-	// return Point3{
-	//    X: ray.origin.X + t*ray.direction.X,
-	//    Y: ray.origin.Y + t*ray.direction.Y,
-	//    Z: ray.origin.Z + t*ray.direction.Z,
-	//}
+func (r Ray) Origin() Point3 { return r.origin }
 
-	return Add(ray.origin, MulScalar(ray.direction, t))
+func (r Ray) Direction() Vec3 { return r.direction }
+
+// At evaluates P(t) = origin + t * direction.
+func (r Ray) At(t float64) Point3 {
+	return Add(r.origin, MulScalar(r.direction, t))
 }
-
-func (ray Ray) RayColor() Color {
-	center := Point3{X: 0, Y: 0, Z: -1}
-
-	t, ok := ray.Hit(center, 0.5)
-
-	if ok {
-		n := Unit(Sub(ray.At(t), center))
-		return MulScalarColors(Color{n.X + 1, n.Y + 1, n.Z + 1}, 0.5)
-	}
-
-	unitDir := Unit(ray.direction)
-	a := 0.5 * (unitDir.Y + 1.0)
-	white := Color{R: 1, G: 1, B: 1}
-	sky := Color{R: 0.5, G: 0.7, B: 1.0}
-	result := AddColors(MulScalarColors(white, 1-a), MulScalarColors(sky, a))
-
-	return result
-}
-
-func (ray Ray) setFaceNormal(outwardNormal Vec3) {}

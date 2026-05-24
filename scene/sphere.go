@@ -2,36 +2,28 @@ package scene
 
 import "math"
 
-type HitRecord struct {
-	P      Point3
-	Normal Vec3    // surface normal at P
-	T      float64 // ray param where P = oriin + T * direction
-}
-
-type Hittable interface {
-	Hit(r Ray, tMin, tMax float64) (bool, HitRecord)
-}
-
 type Sphere struct {
 	Center Point3
 	Radius float64
+	Mat    Material
 }
 
-func NewSphere(center Point3, radius float64) Sphere {
+func NewSphere(center Point3, radius float64, mat Material) Sphere {
 	if radius < 0 {
 		radius = 0
 	}
-	return Sphere{Center: center, Radius: radius}
+	return Sphere{Center: center, Radius: radius, Mat: mat}
 }
 
-// Hit checks the neares valid intersection in [tMin, tMax]
-
-func (s Sphere) Hit(r Ray, tMin, tMax float64) (bool, HitRecord) {
+// Hit uses the simplified quadratic form with h = Dot(d, oc) where
+// oc = Center - Origin, so the factor of 2 in the standard quadratic
+// is absorbed into h. Roots are (h ± sqrt(h*h - a*c)) / a.
+func (s Sphere) Hit(r Ray, rayT Interval) (bool, HitRecord) {
 	var rec HitRecord
 
 	oc := Sub(s.Center, r.origin)
 	d := r.direction
-	a := Dot(d, d)
+	a := LenSquared(d)
 	h := Dot(d, oc)
 	c := LenSquared(oc) - s.Radius*s.Radius
 
@@ -39,22 +31,20 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64) (bool, HitRecord) {
 	if discriminant < 0 {
 		return false, rec
 	}
-
 	sqrtd := math.Sqrt(discriminant)
 
-	// Try the nearer root first
 	root := (h - sqrtd) / a
-	if root <= tMin || root >= tMax {
+	if !rayT.Surrounds(root) {
 		root = (h + sqrtd) / a
-		if root <= tMin || root >= tMax {
+		if !rayT.Surrounds(root) {
 			return false, rec
 		}
 	}
 
-	// Fill the hit record
 	rec.T = root
 	rec.P = r.At(rec.T)
-
-	rec.Normal = MulScalar(Sub(rec.P, s.Center), 1.0/s.Radius)
+	outwardNormal := MulScalar(Sub(rec.P, s.Center), 1.0/s.Radius)
+	rec.SetFaceNormal(r, outwardNormal)
+	rec.Mat = s.Mat
 	return true, rec
 }
